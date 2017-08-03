@@ -308,7 +308,7 @@ def plotPCBoxPlots(i_pcscores_T, o_path="", o_name="Boxplot"):
     '''
     fig = plt.figure()
     plt.grid()
-    plt.boxplot(i_pcscores, 0, 'bD', 0)
+    plt.boxplot(i_pcscores_T, 0, 'bD', 0)
     plt.ylabel("PC")
     plt.xlabel("PC Score")
     plt.title("Boxplot of PC Scores")

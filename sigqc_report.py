@@ -104,11 +104,11 @@ class SigQCReport:
             Saves the Word Document to the filepath of the object.
             Does not return anything explicitly.
         '''
-        if (i_filepath != None):
+        if (o_filepath != None):
             self.setFilePath(o_filepath)
         elif (self._fpath == None):
             self.setFilePath("")
-        if (i_docname != None):
+        if (o_docname != None):
             self.setDocName(o_docname)
         elif (self._docname == None):
             self.setDocName("SigQCReportDoc.docx")

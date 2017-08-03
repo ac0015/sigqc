@@ -121,7 +121,7 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
         # Create figures
         oname = "PCScores"
         header = headers[0].getProdName()+" PC Scores"
-        sigqc_pca.plotPCScores(pcscores, header, oname=oname, n_pcs=n_pcs)
+        sigqc_pca.plotPCScores(pcscores, header, o_name=oname, n_pcs=n_pcs)
 
         # Add figures to a new section of SigQC Report
         figs = []
@@ -138,7 +138,7 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
 
         report.addSection(header+": Principal Component Boxplot", "Unit(s) Tested: "+str_serials, i_figures=figs)
 
-        report.writeReport(i_docname=o_file)
+        report.writeReport(o_docname=o_file)
     
     #######################################
     # Create .csv file with PC Scores
@@ -151,7 +151,6 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
     with open(o_file+".csv", 'w', newline='') as f:
         writer = csv.writer(f, delimiter=',')
         writer.writerows(finalpc)
-    
     return
 
 def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="ReferenceData.csv"):
@@ -180,13 +179,13 @@ def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="Ref
     '''
     # Parse according to file type
     if (input_type.lower() == "ascii"):
-        dataobj = sigqc_asciitestcase.SigQCAsciiTestCaseFile(i_goodfile)
+        dataobj = sigqc_asciitestcase.SigQCAsciiTestCaseFile(i_referencefile)
         dataset = np.array(dataobj.getMatrixDataAt(0))
         for i in range(1,dataobj.getTestCaseCount()):
             dataset = np.hstack((dataset, dataobj.getMatrixDataAt(i)))
         avgvector = np.mean(dataset, axis=0)
     elif (input_type.lower() == "unit"):
-        dataobj = sigqc_unitdata.SigQCUnitDataFile(i_goodfile)
+        dataobj = sigqc_unitdata.SigQCUnitDataFile(i_referencefile)
         dataset = np.array(dataobj.GetCaseDataTable())
         avgvector = np.mean(dataset, axis=0)
     else:
