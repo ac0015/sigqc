@@ -5,6 +5,7 @@ from sigqc import sigqc_primitives
 
 ##################################################################################
 # sigqc_unitdata.py
+# Kyle Coleman
 # Austin Coleman
 #
 # This module encompasses two classes, SigQCUnitDataFile, and SigQCUnitDataFiles
