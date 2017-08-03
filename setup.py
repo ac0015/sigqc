@@ -1,14 +1,6 @@
-
-# coding: utf-8
-
-# In[1]:
-
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
-
-
-# In[6]:
 
 '''Setup constructed with help from:
    https://github.com/pypa/sampleproject/blob/master/setup.py
@@ -24,9 +16,3 @@ setup(
     packages=find_packages(),
     install_requires=['python-docx']
     )
-
-
-# In[ ]:
-
-
-
