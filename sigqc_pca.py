@@ -30,13 +30,15 @@ import matplotlib.cm
 #
 #####################################################################################################################################
 
-def getCovariance(i_dataset, scale_by_nrows=True, center_around_mean=True):
+def getCovariance(i_dataset, corr_matrix=False, scale_by_nrows=True, center_around_mean=True):
     ''' 
-    Returns the covariance matrix of the dataset as a numpy array
+    Returns the covariance matrix (or correlation matrix if specified) of the dataset as a numpy array
         
     Inputs
     ------
         i_dataset - Array type which contains the dataset.
+        corr_matrix - (Optional) Boolean specifying whether to use the correlation
+            matrix instead of the covariance matrix. Defaults to false.
         scale_by_nrows - (Optional) Boolean that tells the method whether
             or not to divide by the number of rows in the original dataset.
             Defaults to true, should be set to false when getting the
@@ -50,12 +52,17 @@ def getCovariance(i_dataset, scale_by_nrows=True, center_around_mean=True):
         Returns a 2D numpy array containing the covariance matrix of the
         dataset. Unless changed with optional parameters, this matrix
         will be scaled by the number of rows and centered around the mean.
-    '''
+    '''    
     if (center_around_mean):
         means = np.array(np.mean(i_dataset,axis=0)).reshape((1,len(i_dataset[0,:])))
         ones = np.ones((len(i_dataset[:,0]),1))
         means_prime = np.dot(ones, means)
         a = i_dataset - means_prime
+
+        # If correlation matrix is preferred, divide by standard dev.
+        if (corr_matrix):
+            std = np.std(a ,axis=0)
+            a = a/std
     else:
         a = i_dataset
         
@@ -77,7 +84,6 @@ def getEigen(i_array):
         i_array - Array type that contains the original dataset of a numeric type or the 
         variance-covariance matrix of original dataset.
 
-        Note: Failing to pass an array with a numeric dtype will raise a "unfunc isFinite" error.
 
     Outputs
     -------
@@ -85,23 +91,9 @@ def getEigen(i_array):
         the corresponding eigenvectors as a 2D numpy array. They are returned together
         respectively within a tuple.
     '''
-    isCovMatrix = False
+    evals, evecs = np.linalg.eigh(i_array, UPLO='U')
+    eigen = sortEigen(evals, evecs)
 
-    if len(i_array[:,0]) == len(i_array[0,:]):
-        for i in range(len(i_array[:,0])):
-            for j in range(len(i_array[0,:])):
-                if i_array[i,j] != i_array[j,i]:
-                    break
-                else:
-                    isCovMatrix = True
- 
-    if isCovMatrix:
-        evals, evecs = np.linalg.eigh(i_array, UPLO='U')
-        eigen = sortEigen(evals, evecs)
-    else:
-        cov = np.array(getCovariance(i_array))
-        evals, evecs = np.linalg.eigh(cov, UPLO='U')
-        eigen = sortEigen(evals, evecs)
     return eigen
 
 def sortEigen(i_evals, i_evects):

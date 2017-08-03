@@ -146,14 +146,14 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
     
     colnames = np.arange(1,len(pcscores[0,:])+1)
     colnames = np.hstack(('Serial Number', colnames))
-    tmppcscores = np.hstack((np.array(serialnumbers).reshape(1,1), pcscores))
+    tmppcscores = np.hstack((np.array(serialnumbers).reshape(len(serialnumbers),1), pcscores))
     finalpc = np.vstack((np.array(colnames).reshape(1,len(colnames)), tmppcscores))
     with open(o_file+".csv", 'w', newline='') as f:
         writer = csv.writer(f, delimiter=',')
         writer.writerows(finalpc)
     return
 
-def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="ReferenceData.csv"):
+def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="ReferenceData.csv", corr_matrix=False):
     '''
     This method takes a file filled with reference (good) units, parses it according to the user
     specified input type, computes the eigenvalues and eigenvectors of the system, computes the
@@ -169,6 +169,8 @@ def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="Ref
             Test Case file or "unit" for a SigQC Unit Data file. Defaults to "ascii".
         opath - (Optional) String describing the output file path. Defaults to the current directory.
         oname - (Optional) String describing the output file name. Defaults to "ReferenceData.csv".
+        corr_matrix - (Optional) Boolean specifying whether to use correlation matrix in
+            eigenvector calculation instead of the covariance matrix. Defaults to false.
         
     Outputs
     -------
@@ -191,8 +193,8 @@ def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="Ref
     else:
         raise Exception("Error: Please provide a valid input_type. Valid options include 'ascii' and 'unit'")
     
-    # Calculate eigenvalues and eigenvectors
-    cov_matrix = sigqc_pca.getCovariance(dataset, center_around_mean=True, scale_by_nrows=True) 
+    # Calculate eigenvalues and eigenvectors on covariance (or correlation) matrix
+    cov_matrix = sigqc_pca.getCovariance(dataset, center_around_mean=True, scale_by_nrows=True, corr_matrix=corr_matrix) 
     evals, evecs = sigqc_pca.getEigen(cov_matrix)
     
     # Store eigenvalues, eigenvectors, and average vector
