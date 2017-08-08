@@ -31,7 +31,7 @@ class SigQCReport:
     The SigQCReport class is the base class from which a variety of SigQC data reports may
     be created. 
     '''
-    def __init__(self, template_name="SigQCPCATemplate.docx"):
+    def __init__(self, template_name="SigQCReportTemplate.docx"):
         '''
         Constructor of the SigQCReport class used to export SigQC Product Data into a Word
         Document format. The optional variable template_name is used to specify
