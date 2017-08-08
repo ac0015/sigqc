@@ -15,6 +15,6 @@ setup(
     author_email = "austin.coleman@signalysis.com",
     packages=find_packages(),
     include_package_data=True,
-    package_data={'sigqc': ['SigQCReportTemplate.docx']},
+    package_data={'sigqc': ['templates/SigQCReportTemplate.docx']},
     install_requires=['python-docx']
     )
