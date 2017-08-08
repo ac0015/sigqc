@@ -1,6 +1,7 @@
 from docx import Document
 from docx.shared import Inches
 import types
+import os
 
 ################################################################################################
 # sigqc_report.py
@@ -38,7 +39,7 @@ class SigQCReport:
         which Document template to open and which to save as an external file.
         '''
         self._fpath = None
-        self._document = Document(template_name)
+        self._document = Document(os.path.join(os.path.dirname(__file__),'templates\\'+template_name))
         self._docname = None
         
         # Set narrow margins to fit larger figures
