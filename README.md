@@ -6,4 +6,4 @@ From your Anaconda prompt, simply type:
 `pip install git+https://github.com/ac0015/sigqc.git`
 
 ### Acknowledgements
-The developers would like to thank Robert Cagle and Bob Coleman for their indispensible help with the direction of this project and Dr. Craig Clark for his statistical expertise.
+The developers would like to thank Bob Coleman and Robert Cagle for their indispensible help with the direction of this project and Dr. Craig Clark for his statistical expertise.
