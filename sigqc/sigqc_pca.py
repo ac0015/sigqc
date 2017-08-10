@@ -61,7 +61,7 @@ def getCovariance(i_dataset, corr_matrix=False, scale_by_nrows=True, center_arou
 
         # If correlation matrix is preferred, divide by standard dev.
         if (corr_matrix):
-            std = np.std(a ,axis=0)
+            std = np.std(a ,axis=0, ddof=1)
             a = a/std
     else:
         a = i_dataset
@@ -140,6 +140,34 @@ def getPCScores(i_dataset, i_evals, i_evects, n_pcs=None):
     means_prime = np.dot(ones, means)
     a = i_dataset - means_prime
     pc_scores = np.dot(a,i_evects)
+
+    return pc_scores
+
+def getPCScoresCorr(i_centered_dataset, i_evals, i_evects, n_pcs=None):
+    '''
+    Calculates and returns principal component scores for each unit in the 
+    dataset as a 2D numpy array using the correlation matrix of the dataset
+    instead of the original dataset. 
+    Inputs
+    ------
+        i_centered_dataset - Array-like of numeric data type that contains the
+            correlation matrix of the dataset
+        i_evals - Eigenvalues from i_dataset
+        i_evects - Associated eigenvectors with i_evals
+        n_pcs - (Optional) Number of principal components to be calculate PC Scores
+            with. Will default to using all PCs in calculation.
+    Outputs
+    -------
+        Returns principal component scores for each unit in the dataset
+        as a 2D numpy array. Rows denote indeces for dataset units. 
+        Columns denote PC scores associated with those units.
+    '''
+    # If unspecified, use all PCs.
+    if n_pcs == None:
+        n_pcs = len(i_evects[0,:])+1
+
+    pc_scores = np.zeros((n_pcs,len(i_centered_dataset[:,0])))
+    pc_scores = np.dot(i_centered_dataset,i_evects)
 
     return pc_scores
 

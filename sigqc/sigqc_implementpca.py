@@ -93,6 +93,16 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
                 avgvec = np.array(row.split(','), dtype=float)
                 while ("ENDAVGVECTOR" not in row):
                     row = next(f)
+            if ("BEGINSTANDDEV" in row):
+                row = next(f)
+                stddev = np.array(row.split(','), dtype=float)
+                while ("ENDSTANDDEV" not in row):
+                    row = next(f)
+            if ("ISCORRMATRIX" in row):
+                row = next(f)
+                corr_matrix = str(row)
+                while ("ENDCORRMATRIX" not in row):
+                    row = next(f)
             if ("BEGINEVALS" in row):
                 row = next(f)
                 evals = np.array(row.split(','), dtype=float)
@@ -113,7 +123,10 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
     boxplotlist = []
             
     # Calculate PC Scores with reference dataset as eigenvectors
-    pcscores = np.dot(dataset-avgvec, evecs)
+    if ('True' in corr_matrix):
+        pcscores = np.dot((dataset-avgvec)/stddev, evecs)
+    else:
+        pcscores = np.dot((dataset-avgvec), evecs)
             
     if (generate_report):
         report = sigqc_report.SigQCReport() # Initialize report
@@ -153,6 +166,9 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
         writer.writerows(finalpc)
     return
 
+
+# In[6]:
+
 def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="ReferenceData.csv", corr_matrix=False):
     '''
     This method takes a file filled with reference (good) units, parses it according to the user
@@ -186,10 +202,12 @@ def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="Ref
         for i in range(1,dataobj.getTestCaseCount()):
             dataset = np.hstack((dataset, dataobj.getMatrixDataAt(i)))
         avgvector = np.mean(dataset, axis=0)
+        stddev = np.std(dataset, axis=0)
     elif (input_type.lower() == "unit"):
         dataobj = sigqc_unitdata.SigQCUnitDataFile(i_referencefile)
         dataset = np.array(dataobj.GetCaseDataTable())
         avgvector = np.mean(dataset, axis=0)
+        stddev = np.std(dataset, axis=0)
     else:
         raise Exception("Error: Please provide a valid input_type. Valid options include 'ascii' and 'unit'")
     
@@ -203,11 +221,22 @@ def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="Ref
         writer.writerow(["BEGINAVGVECTOR"])
         writer.writerow(avgvector)
         writer.writerow(["ENDAVGVECTOR"])
+        writer.writerow(["BEGINSTANDDEV"])
+        writer.writerow(stddev)
+        writer.writerow(["ENDSTANDDEV"])
+        writer.writerow(["ISCORRMATRIX"])
+        writer.writerow([str(corr_matrix)])
+        writer.writerow(["ENDCORRMATRIX"])
         writer.writerow(["BEGINEVALS"])
         writer.writerow(evals)
         writer.writerow(["ENDEVALS"])
         writer.writerow(["BEGINEVECS"])
         writer.writerows(evecs)
         writer.writerow(["ENDEVECS"])
-    
     return
+
+
+# In[ ]:
+
+
+
