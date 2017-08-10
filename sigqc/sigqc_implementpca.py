@@ -166,9 +166,6 @@ def implementPCA(i_referencefile, i_testfile, input_type="ascii", o_file="PCA_Re
         writer.writerows(finalpc)
     return
 
-
-# In[6]:
-
 def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="ReferenceData.csv", corr_matrix=False):
     '''
     This method takes a file filled with reference (good) units, parses it according to the user
@@ -234,9 +231,5 @@ def storeReferenceData(i_referencefile, input_type="ascii", opath="", oname="Ref
         writer.writerows(evecs)
         writer.writerow(["ENDEVECS"])
     return
-
-
-# In[ ]:
-
 
 
