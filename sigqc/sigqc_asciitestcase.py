@@ -570,7 +570,6 @@ class SigQCAsciiTestCaseFile:
                 maxcount = count
         return mincount, maxcount
 
-    
     def getAllTestCases(self):
         '''
         Get a tuple containing the matrix of all test case features of each unit and associated metadata.
@@ -584,30 +583,38 @@ class SigQCAsciiTestCaseFile:
             4) A 2-D numpy array containing lower and upper limits of test case features if present
         '''
         alldomainnames = []
-        minunits, maxunits = self.getMinMaxUnits()
-        minfeatures, maxfeatures = self.getMinMaxFeatures()
-        allcasedata = np.empty((self.getTestCaseCount(), maxunits, maxfeatures))
-        alllimits = np.empty((self.getTestCaseCount(), 2, maxfeatures))
-        allserials = np.empty((self.getTestCaseCount(), maxunits), dtype=str)
+        alllimits = None
         
-        # Collect data
-        for i in range(0,len(self._casedata)):
+        # Initialize matrices with data from first matrix...    
+        allcasedata = self.getMatrixDataAt(0)
+        matrix = self.getMatrixAt(0)
+        header = matrix.getHeader()
+        if not (self._limits == []):
+            limits = np.zeros((2,len(allcasedata[0,:])))
+            limits[0,:] = self.getLimitsAt(0).getLowerLimits()[0]
+            limits[1,:] = self.getLimitsAt(0).getUpperLimits()[0]    
+            alllimits = limits
+        if (len(allcasedata[0,:]) > 1):
+            for j in range(0, len(allcasedata[0,:])):
+                alldomainnames.append(str(header.getCaseName())+" "+str(matrix.getXValues()[j]))
+        else:
+            alldomainnames.append(str(header.getCaseName())+" "+str(matrix.getXValues()[0]))
+        
+        # Continue stacking data...
+        for i in range(1,len(self._casedata)):
             matrix = self.getMatrixAt(i)
             data = self.getMatrixDataAt(i)
-            limits = np.zeros((2,len(data[0,:])))
-            allserials[i] = matrix.getSerialNumbers() 
+            serialnumbers = matrix.getSerialNumbers()
             header = matrix.getHeader()
             if (len(data[0,:]) > 1):
                 for j in range(0, len(data[0,:])):
                     alldomainnames.append(str(header.getCaseName())+" "+str(matrix.getXValues()[j]))
             else:
                 alldomainnames.append(str(header.getCaseName())+" "+str(matrix.getXValues()[0]))
-            allcasedata[i, 0:len(data), 0:len(data[0,:])] = data
-            limits[0,:] = self.getLimitsAt(i).getLowerLimits()[0]
-            limits[1,:] = self.getLimitsAt(i).getUpperLimits()[0]
-            alllimits[i] = limits
-
-        allcasedata = np.ma.masked_invalid(allcasedata)
-        alllimits = np.ma.masked_invalid(alllimits)
-        
-        return (allserials, alldomainnames, allcasedata, alllimits)
+            allcasedata = np.hstack((allcasedata, data))
+            if not (alllimits == None):
+                limits = np.zeros((2,len(data[0,:])))
+                limits[0,:] = self.getLimitsAt(i).getLowerLimits()[0]
+                limits[1,:] = self.getLimitsAt(i).getUpperLimits()[0]
+                alllimits = np.hstack((alllimits, limits))
+        return (serialnumbers, alldomainnames, allcasedata, alllimits)
